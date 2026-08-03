@@ -5,32 +5,32 @@
 </div>
 
 ```
-        .:-=+**+=-:.              SYSTEM.INFO ─────────── FULLSTACK.BUILDER
-     .-+*#%@@@@@@%#*+-.           @RyanRamadhan11
-   .=*%@@@@@@@@@@@@@@%*=.
-  -*%@@@@@@@@@@@@@@@@@@%*-        Subject .......  Ryan Ramadhan
- =%@@@@@%#**++**#%@@@@@@@@%=      Role ..........  Full-Stack Web Developer
--%@@@@#=:.      .:=#@@@@@@@%-     Affiliation ...  Mekanika Digital Pratama
-%@@@@+.  .-==-.   .+@@@@@@@@%     Base ..........  Indonesia
-@@@@#   :*%@@%*:   #@@@@@@@@@     Status ........  building / shipping / maintaining
-@@@@-  .#@@@@@@#.  -@@@@@@@@@
-@@@@:  :@@@@@@@@:  :@@@@@@@@@     BUILD.MODE ───────────────────────────────────
-@@@@-   *@@@@@@*   -@@@@@@@@@     Primary .......  Laravel · PHP · JavaScript
-@@@@#.  .=*%%*=.  .#@@@@@@@@@     Direction .....  Business systems & internal tools
-%@@@@*:    ..    :*@@@@@@@@%      Focus .........  ERP · POS · HR / Attendance
-=%@@@@@#+-:..:-+#@@@@@@@@@%=
- -*%@@@@@@@@@@@@@@@@@@@@%*-       BUILD.LOG ────────────────────────────────────
-   .=*%@@@@@@@@@@@@@@%*=.         Backend .......  Laravel · Blade · MySQL
-      .-+*#%@@@@%#*+-.            Frontend ......  JavaScript · Tailwind · Bootstrap
-          .:-==-:.                Desktop .......  Java · Electron
-                                  Ops ...........  Git · REST API · deployment
-  VISUAL.MAP // PORTRAIT.SIGNAL
-                                  ORIG.LINKS ───────────────────────────────────
-                                  GitHub ........  @RyanRamadhan11
-                                  LinkedIn ......  /in/ryan-ramadhan-17118b222
-                                  Mail ..........  ramadhanryan676@gmail.com
+                ...::::....                     SYSTEM.INFO ────────────── FULLSTACK.BUILDER
+           ...::::::..........                  @RyanRamadhan11
+         ...... ..           ....
+        ..                      ...             Subject .......  Ryan Ramadhan
+       .   .-+++++++==--::.        .            Role ..........  Full-Stack Web Developer
+       ...=#%%%%%%######**+-.                   Affiliation ...  Mekanika Digital Pratama
+      :--*@@@%%%%%%########**+=:.               Base ..........  Indonesia
+      -=*@@@@@@%%%%############*+.              Status ........  building / shipping
+      =+%@@%##***######**++***###+:
+      =*@%###*++++****++==+++**###+.            BUILD.MODE ───────────────────────────────────
+      -%%%**+=-==+#%##*+==--=++**#*:            Primary .......  Laravel · PHP · JavaScript
+    .:=%@%%##*+*##%%%##***++***####:            Direction .....  Business systems & internal tools
+   .-=#%@@@%%%%%%%@@%##############+=-.         Focus .........  ERP · POS · HR / Attendance
+   .:=+#%%%%###*#%#%#*##**#######***+-:
+    :--+*#%##**#%*+++=+*****####***-=-.         BUILD.LOG ────────────────────────────────────
+     :-=+**#*+*####********+*****++=-:          Backend .......  Laravel · Blade · MySQL
+      .:-=++**********++++*****+==--:           Frontend ......  JavaScript · Tailwind · Bootstrap
+        .:--==+*##**++*****++==--:.             Desktop .......  Java · Electron
+          ..::-============--::..               Ops ...........  Git · REST API · deployment
+              ...:::::::::...
+                                                ORIG.LINKS ───────────────────────────────────
+  VISUAL.MAP // PORTRAIT.SIGNAL                 GitHub ........  @RyanRamadhan11
+                                                LinkedIn ......  /in/ryan-ramadhan-17118b222
+                                                Mail ..........  ramadhanryan676@gmail.com
 
-                                  signal.locked > LARAVEL / WEB / SYSTEMS
+                                                signal.locked > LARAVEL / WEB / SYSTEMS
 ```
 
 <div align="center">
