@@ -31,7 +31,7 @@ monitoring mesin, traceability, dan sistem mutu.
 - Fokus di **sistem industri & manufaktur** — menyambungkan perangkat keras ke
   web lewat **MQTT, RFID, scanner, robot, dan CCTV**
 - Memimpin tim developer: arsitektur, code review, dan mentoring
-- S1 Teknik Informatika **Universitas Singaperbangsa Karawang** — IPK **3.97**
+- S1 Teknik Informatika **Universitas Singaperbangsa Karawang** 
 - Sedang mendalami **arsitektur sistem terdistribusi** dan **DevOps**
 - Terbuka untuk diskusi soal Laravel, React, Spring Boot, atau sistem manufaktur
 
