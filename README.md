@@ -1,9 +1,9 @@
 <!-- ═══════════════════════ HEADER ═══════════════════════ -->
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:0EA5E9&height=200&section=header&text=Ryan%20Ramadhan&fontSize=52&fontColor=ffffff&fontAlignY=32&desc=Software%20Engineering%20Team%20Lead&descAlignY=52&descSize=18&animation=fadeIn" width="100%" alt="Ryan Ramadhan" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:0EA5E9&height=200&section=header&text=Ryan%20Ramadhan&fontSize=52&fontColor=ffffff&fontAlignY=32&desc=Software%20Engineer&descAlignY=52&descSize=20&animation=fadeIn" width="100%" alt="Ryan Ramadhan" />
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=800&color=6366F1&center=true&vCenter=true&width=700&lines=Software+Engineering+Team+Lead;Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;3%2B+tahun+%C2%B7+25%2B+proyek+web+%26+mobile;Sedang+mendalami+microservices+%26+performa+web" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=800&color=6366F1&center=true&vCenter=true&width=700&lines=Software+Engineer;Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;3%2B+tahun+%C2%B7+25%2B+proyek+web+%26+mobile;Sedang+mendalami+microservices+%26+performa+web" alt="Typing SVG" />
 
 <br/>
 
@@ -22,8 +22,7 @@
 
 ## Tentang Saya
 
-Software Engineer dari **Karawang, Indonesia** &mdash; saat ini berperan sebagai
-**Software Engineering Team Lead**.
+**Software Engineer** dari Karawang, Indonesia.
 
 Membangun pengalaman digital dengan fokus pada solusi yang menggabungkan
 **estetika frontend** dan **keandalan backend**.
