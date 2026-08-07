@@ -3,7 +3,7 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:0EA5E9&height=200&section=header&text=Ryan%20Ramadhan&fontSize=52&fontColor=ffffff&fontAlignY=32&desc=Software%20Engineering%20Team%20Lead&descAlignY=52&descSize=18&animation=fadeIn" width="100%" alt="Ryan Ramadhan" />
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=800&color=6366F1&center=true&vCenter=true&width=700&lines=Software+Engineering+Team+Lead;Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;Menyambungkan+mesin+pabrik+ke+web+%3A+MQTT+%C2%B7+RFID+%C2%B7+Robot;Teknik+Informatika+UNSIKA+%E2%80%94+IPK+3.97" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=800&color=6366F1&center=true&vCenter=true&width=700&lines=Software+Engineering+Team+Lead;Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;3%2B+tahun+%C2%B7+25%2B+proyek+web+%26+mobile;Sedang+mendalami+microservices+%26+performa+web" alt="Typing SVG" />
 
 <br/>
 
@@ -22,18 +22,21 @@
 
 ## Tentang Saya
 
-Software Engineer dari **Karawang, Indonesia** &mdash; **Software Engineering
-Team Lead**.
+Software Engineer dari **Karawang, Indonesia** &mdash; saat ini berperan sebagai
+**Software Engineering Team Lead**.
 
-Sehari-hari membangun sistem yang dipakai langsung di lantai produksi pabrik:
-monitoring mesin, traceability, dan sistem mutu.
+Membangun pengalaman digital dengan fokus pada solusi yang menggabungkan
+**estetika frontend** dan **keandalan backend**.
 
-- Fokus di **sistem industri & manufaktur** — menyambungkan perangkat keras ke
-  web lewat **MQTT, RFID, scanner, robot, dan CCTV**
+- **3+ tahun** di industri pengembangan perangkat lunak
+- **25+ proyek**, mencakup aplikasi web hingga mobile
 - Memimpin tim developer: arsitektur, code review, dan mentoring
-- S1 Teknik Informatika **Universitas Singaperbangsa Karawang** 
-- Sedang mendalami **arsitektur sistem terdistribusi** dan **DevOps**
-- Terbuka untuk diskusi soal Laravel, React, Spring Boot, atau sistem manufaktur
+- Sedang mendalami **arsitektur microservices** dan **optimalisasi performa
+  aplikasi web modern**
+- Lulusan **Teknik Informatika** yang terus haus akan teknologi terbaru
+
+> Kode bukan sekadar baris instruksi, tapi solusi untuk mempermudah hidup
+> orang banyak.
 
 ---
 
@@ -41,36 +44,38 @@ monitoring mesin, traceability, dan sistem mutu.
 
 ## Tech Stack
 
-| | |
+| Kategori | Teknologi |
 | --- | --- |
-| **Bahasa** | PHP · JavaScript · TypeScript · Java · C# |
-| **Backend** | Laravel · Spring Boot · .NET Framework · Node.js · Express.js |
-| **Frontend** | React.js · React Native · Next.js · Redux · Blade · Tailwind CSS · Bootstrap |
-| **Database** | MySQL · PostgreSQL · Prisma · Eloquent ORM · Firebase |
-| **API & Realtime** | REST API · Swagger · Postman · WebSockets · MQTT · AJAX |
-| **Perangkat Keras** | RFID · Barcode/QR Scanner · Robot · CCTV · Socket |
-| **DevOps** | Docker · Git · GitLab CI/CD · Ubuntu/Linux · Maven |
-| **Cloud** | Google Cloud · Firebase · Vercel · Netlify · Hostinger |
+| **Programming Languages** | PHP · JavaScript · TypeScript · Java · C# |
+| **Frameworks & Libraries** | Laravel · React.js · Next.js · Redux · React Native · Express.js · Node.js · Spring Boot · .NET Framework · WordPress |
+| **Databases & ORM** | PostgreSQL · MySQL · Eloquent ORM · Prisma |
+| **Web Technologies** | HTML5 · CSS · Bootstrap · Tailwind CSS · AJAX · REST API · WebSockets · Google Auth |
+| **Tools & Platforms** | Docker · Git · CI/CD · Firebase · Ubuntu/Linux · Windows · Maven · Swagger · Postman · Hostinger |
 
----
+<details>
+<summary><b>Bidang keahlian</b></summary>
 
-<!-- ═══════════════════════ SERTIFIKASI ═══════════════════════ -->
+<br/>
 
-## Sertifikasi
+**Backend Development**
+Membangun aplikasi sisi server yang andal dan skalabel, dengan perhatian pada
+performa dan keamanan.
+`PHP` `Laravel` `Eloquent ORM` `Java` `Spring Boot` `Node.js` `Express.js`
+`C#` `.NET Framework` `PostgreSQL` `MySQL` `Prisma` `REST API`
 
-Hanya lembaga sertifikasi independen &mdash; bukan sertifikat internal
-perusahaan.
+**Frontend Development**
+Membuat antarmuka yang responsif, interaktif, dan intuitif dengan fokus pada
+pengalaman pengguna.
+`HTML5` `CSS` `JavaScript` `React.js` `Next.js` `Redux` `Bootstrap` `AJAX`
+`WebSockets`
 
-| Sertifikasi | Penerbit | Tahun |
-| --- | --- | --- |
-| **Junior Web Developer** &mdash; Lisensi Nasional | BNSP | 2022 |
-| **Certified Junior Web Developer** | Kominfo &mdash; Digital Talent Scholarship | 2022 |
-| **Certified Secure Computer User (CSCU)** | EC-Council | 2021 |
-| **Fullstack Web Development** | Kampus Merdeka &mdash; Binar Academy | 2022 |
-| **Cloud Practitioner Essentials** | Dicoding | 2022 |
-| **Version Control with Git & GitHub** | Dicoding | 2021 |
-| **SQL Fundamentals** | Progate | 2021 |
-| **Security Awareness Essentials** | Kominfo | 2021 |
+**Mobile, DevOps & Services**
+Pengembangan mobile lintas platform, penerapan praktik DevOps, dan integrasi
+layanan pihak ketiga.
+`React Native` `Git` `Docker` `CI/CD` `Ubuntu/Linux` `Postman` `Swagger`
+`Firebase` `Google Auth` `Hostinger`
+
+</details>
 
 <div align="center">
 
