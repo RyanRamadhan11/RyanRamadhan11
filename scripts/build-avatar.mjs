@@ -22,23 +22,29 @@ import jpeg from 'jpeg-js';
 import { PNG } from 'pngjs';
 
 // ─────────────────────────── setelan ───────────────────────────
-// Bingkai potret, dalam pecahan lebar foto asli. Atur ini kalau ganti foto:
-// perbesar CROP agar lebih banyak badan, geser CX/CY untuk memusatkan wajah.
-const CROP = 0.64;     // sisi kotak yang diambil
-const CX = 0.50;       // titik pusat mendatar
-const CY = 0.54;       // titik pusat menegak (di bawah tengah = kepala + bahu)
+// Bingkainya dihitung sendiri dari wajah yang terdeteksi. Kalau meleset --
+// misalnya fotonya rombongan atau wajahnya menyamping -- isi FRAME di bawah
+// ini dengan { crop, cx, cy } dalam pecahan lebar foto untuk memaksanya.
+const FRAME = null;    // contoh: { crop: 0.66, cx: 0.5, cy: 0.52 }
+const ZOOM = 2.1;      // sisi bingkai, dalam kelipatan tinggi wajah
 
-const SIZE = 440;      // sisi kanvas kerja (piksel)
-const ROW_GAP = 3.4;   // jarak antar garis shading
-const STEP = 1.6;      // jarak sampel saat garis sedang bergelombang
-const FLAT_STEP = 14;  // jarak sampel saat garis nyaris lurus (menghemat ukuran)
-const GAMMA = 0.80;    // < 1 memucatkan warna tengah, menyisakan yang benar-benar gelap
-const CONTRAST = 1.40; // kurva S: terang makin terang, bayangan makin pekat
-const BRIGHT = 0.05;   // angkat keseluruhan supaya kulit tidak ikut jadi hitam
-const EDGE_LO = 0.16;  // ambang bawah histeresis Canny
-const EDGE_HI = 0.34;  // ambang atas histeresis Canny
-const MIN_EDGE_LEN = 9;// buang serpihan tepi yang lebih pendek dari ini
-const RDP_EPS = 0.7;   // toleransi penyederhanaan polyline
+const SIZE = 560;      // sisi kanvas kerja (piksel)
+const ROW_GAP = 2.1;   // jarak antar garis shading
+// Amplitudo maksimum HARUS di bawah setengah ROW_GAP. Kalau lebih, gelombang
+// baris bertabrakan dengan tetangganya dan detail wajah saling menelan --
+// itu yang bikin versi sebelumnya jadi bubur.
+const AMP = 0.46;      // amplitudo puncak, dalam kelipatan ROW_GAP
+const STEP = 1.5;      // jarak sampel saat garis sedang bergelombang
+const FLAT_STEP = 13;  // jarak sampel saat garis nyaris lurus (menghemat ukuran)
+const SCAN_STEP = 2;   // langkah pemindaian di luar subjek (mempertajam siluet)
+const SHARPEN = 0.45;  // penajaman lokal; ini yang membuat mata & bibir terbaca
+const GAMMA = 1.0;     // 1 = pemetaan lurus dari terang ke kerapatan garis
+const CONTRAST = 1.05; // kurva S ringan; terlalu keras bikin wajahnya cekung dan tua
+const BRIGHT = 0.12;   // angkat keseluruhan supaya kulit terisi penuh, bukan berongga
+const EDGE_LO = 0.14;  // ambang bawah histeresis Canny
+const EDGE_HI = 0.30;  // ambang atas histeresis Canny
+const MIN_EDGE_LEN = 26; // buang serpihan tepi yang lebih pendek dari ini
+const RDP_EPS = 0.6;   // toleransi penyederhanaan polyline
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -55,12 +61,90 @@ function loadPixels() {
   return { data: img.data, w: img.width, h: img.height, path };
 }
 
+/**
+ * Cari wajah lewat warna kulit, lalu ambil gumpalan terbesar yang paling dekat
+ * ke tengah-atas foto. Batas atas r-g menyingkirkan benda merah pekat seperti
+ * selempang wisuda, yang sebaliknya lolos sebagai "kulit"; memilih satu
+ * gumpalan juga membuang wajah orang lain yang ikut terpotret di tepi.
+ */
+function detectFace({ data, w, h }) {
+  const isSkin = (r, g, b) =>
+    r > 80 && g > 30 && b > 15 &&
+    Math.max(r, g, b) - Math.min(r, g, b) > 12 &&
+    r > g + 8 && r > b + 12 && r - g < 70;
+
+  const mask = new Uint8Array(w * h);
+  for (let i = 0, p = 0; p < w * h; p++, i += 4) {
+    if (isSkin(data[i], data[i + 1], data[i + 2])) mask[p] = 1;
+  }
+
+  // pelabelan komponen terhubung, iteratif supaya tumpukan panggilan aman
+  const seen = new Uint8Array(w * h);
+  let best = null;
+  for (let p = 0; p < w * h; p++) {
+    if (!mask[p] || seen[p]) continue;
+    const stack = [p];
+    seen[p] = 1;
+    let x0 = w, x1 = 0, y0 = h, y1 = 0, area = 0;
+    while (stack.length) {
+      const q = stack.pop();
+      const x = q % w;
+      const y = (q / w) | 0;
+      area++;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const r = ny * w + nx;
+          if (mask[r] && !seen[r]) { seen[r] = 1; stack.push(r); }
+        }
+      }
+    }
+    const bw = x1 - x0 + 1;
+    const bh = y1 - y0 + 1;
+    const aspect = bw / bh;
+    if (area < w * h * 0.004 || aspect < 0.45 || aspect > 1.9) continue;
+    // lebih suka yang besar, tegak, dan dekat sumbu tengah
+    const offCentre = Math.abs((x0 + x1) / 2 / w - 0.5);
+    const score = area * (1 - offCentre) * (1 - Math.abs(aspect - 0.8) / 2);
+    if (!best || score > best.score) best = { score, x0, x1, y0, y1, bw, bh };
+  }
+  return best;
+}
+
+/** Bingkai potret: dari wajah kalau terdeteksi, kalau tidak dari tengah foto. */
+function frameFor(src, face) {
+  const { w, h } = src;
+  if (FRAME) {
+    return { side: Math.round(Math.min(w, h) * FRAME.crop), cxPx: w * FRAME.cx, cyPx: h * FRAME.cy };
+  }
+  if (!face) {
+    const side = Math.round(Math.min(w, h) * 0.8);
+    return { side, cxPx: w / 2, cyPx: h / 2 };
+  }
+  const side = Math.min(Math.min(w, h), Math.round(face.bh * ZOOM));
+  return {
+    side,
+    cxPx: (face.x0 + face.x1) / 2,
+    // digeser ke bawah supaya rambut tidak terpotong dan bahunya ikut masuk
+    cyPx: (face.y0 + face.y1) / 2 + face.bh * 0.28,
+  };
+}
+
 /** Potong bingkai potret -> abu-abu -> diperkecil ke SIZE, dengan rata-rata area. */
-function toGray({ data, w, h }) {
-  const side = Math.round(Math.min(w, h) * CROP);
-  const ox = Math.min(w - side, Math.max(0, Math.round(w * CX - side / 2)));
-  const oy = Math.min(h - side, Math.max(0, Math.round(h * CY - side / 2)));
+function toGray({ data, w, h }, frame) {
+  const side = frame.side;
+  const ox = Math.min(w - side, Math.max(0, Math.round(frame.cxPx - side / 2)));
+  const oy = Math.min(h - side, Math.max(0, Math.round(frame.cyPx - side / 2)));
   const scale = side / SIZE;
+  frame.ox = ox;
+  frame.oy = oy;
+  frame.scale = scale;
   const out = new Float32Array(SIZE * SIZE);
 
   for (let y = 0; y < SIZE; y++) {
@@ -122,6 +206,20 @@ function curve(g) {
   return out;
 }
 
+/**
+ * Unsharp mask: kurangi versi yang diburamkan lebar, sisanya detail halus lalu
+ * dikuatkan. Tanpa ini mata, lubang hidung, dan garis bibir cuma jadi bercak
+ * abu-abu yang seragam -- persis kenapa potretnya tadi tidak kelihatan mirip.
+ */
+function sharpen(g) {
+  const low = blur(g, 7);
+  const out = new Float32Array(g.length);
+  for (let i = 0; i < g.length; i++) {
+    out[i] = Math.min(1, Math.max(0, g[i] + SHARPEN * (g[i] - low[i])));
+  }
+  return out;
+}
+
 function blur(src, sigma) {
   const r = Math.max(1, Math.ceil(sigma * 2.5));
   const k = new Float32Array(r * 2 + 1);
@@ -153,20 +251,51 @@ function blur(src, sigma) {
   return out;
 }
 
+/** Diisi di bagian keluaran, begitu wajah dan bingkainya diketahui. */
+let subject = () => 1;
+
+/** 1 di bawah `inner`, 0 di atas `outer`, melandai halus di antaranya. */
+function falloff(v, inner, outer) {
+  if (v <= inner) return 1;
+  if (v >= outer) return 0;
+  const t = (v - inner) / (outer - inner);
+  return 1 - t * t * (3 - 2 * t);
+}
+
 /**
- * Bobot radial: makin ke tepi lingkaran makin diredam, supaya latar belakang
- * meluruh jadi garis tenang dan wajah tetap jadi pusat perhatian.
+ * Topeng subjek: elips kepala ditambah badan yang melebar ke bawah, keduanya
+ * diturunkan dari kotak wajah hasil deteksi.
+ *
+ * Vignette elips tetap yang dipakai sebelumnya tidak cukup: latar bangunan itu
+ * duduk TEPAT di kiri-kanan kepala, jadi jaraknya ke pusat sama dengan pipi --
+ * tidak ada bentuk radial yang bisa memisahkan keduanya. Bentuk yang mengikuti
+ * orangnya bisa.
  */
-function vignette(x, y) {
-  // elips, bukan lingkaran: subjeknya lebih tinggi daripada lebar, jadi tiang
-  // dan bangunan di kiri-kanan ikut teredam sementara kepalanya tetap utuh
-  const dx = (x - SIZE * 0.5) / (SIZE * 0.30);
-  const dy = (y - SIZE * 0.47) / (SIZE * 0.42);
-  const r = Math.hypot(dx, dy);
-  if (r < 0.72) return 1;
-  if (r > 1.06) return 0.02;
-  const t = (r - 0.72) / 0.34;
-  return Math.max(0.02, 1 - 0.98 * t * t);
+function makeSubjectMask(face, frame) {
+  if (!face) return () => 1;
+  const { ox, oy, scale } = frame;
+  const fx = ((face.x0 + face.x1) / 2 - ox) / scale;
+  const fy = ((face.y0 + face.y1) / 2 - oy) / scale;
+  const fw = face.bw / scale;
+  const fh = face.bh / scale;
+
+  const hx = fx;
+  const hy = fy - fh * 0.20;        // naik sedikit supaya rambut ikut terangkul
+  // fw/fh itu ukuran PENUH kotak wajah, sedangkan elips memakai jari-jari, jadi
+  // koefisiennya berkisar di sekitar 0,5 -- sedikit lebih besar untuk memberi
+  // ruang bagi telinga dan rambut yang tidak terbaca sebagai kulit.
+  const rx = fw * 0.56;
+  const ry = fh * 0.74;
+  const neckY = hy + ry * 0.80;
+
+  return (x, y) => {
+    const head = falloff(Math.hypot((x - hx) / rx, (y - hy) / ry), 0.92, 1.16);
+    if (y < neckY) return head;
+    const drop = (y - neckY) / Math.max(1, SIZE - neckY);
+    const halfW = rx * (0.86 + 1.5 * drop);
+    const body = falloff(Math.abs(x - hx) / halfW, 0.88, 1.12);
+    return Math.max(head, body);
+  };
 }
 
 // ────────────────────────── lapis 1: shading ─────────────────────────
@@ -184,20 +313,41 @@ function shadingPaths(gray) {
   const paths = [];
 
   for (let y = ROW_GAP; y < SIZE - ROW_GAP; y += ROW_GAP) {
-    const pts = [];
+    let pts = null;
     let phase = 0;
     let x = 0;
+    const flush = () => {
+      if (pts && pts.length > 2) paths.push(pts);
+      pts = null;
+      phase = 0;
+    };
 
     while (x <= SIZE) {
-      const ink = Math.pow(1 - sample(x, y), 1 / GAMMA) * vignette(x, y);
-      // gelap -> gelombang lebih rapat dan lebih tinggi
+      const inside = subject(x, y);
+      // Di luar orangnya jangan menggambar apa pun. Membiarkan garis lurus
+      // menyeberangi latar -- seperti versi sebelumnya -- memenuhi lingkaran
+      // dengan tekstur serba sama yang menenggelamkan potretnya sendiri.
+      if (inside < 0.10) {
+        flush();
+        // langkah kecil, bukan FLAT_STEP: langkah besar membuat titik masuk ke
+        // subjek terkuantisasi, dan siluetnya jadi bertangga
+        x += SCAN_STEP;
+        continue;
+      }
+      // Tinta mengikuti TERANG, bukan gelap. Kartunya berlatar gelap dan
+      // garisnya berwarna terang, jadi bagian yang banyak garis terbaca terang.
+      // Dipetakan terbalik, wajahnya yang tersorot cahaya malah jadi lubang
+      // kosong dan latar yang gelap justru dipenuhi garis.
+      const ink = Math.pow(sample(x, y), 1 / GAMMA) * inside;
+      // makin terang -> gelombang lebih rapat dan lebih tinggi
       phase += STEP * (0.5 + 1.7 * ink);
-      const amp = ink * ROW_GAP * 1.18;
+      const amp = ink * ROW_GAP * AMP;
+      if (!pts) pts = [];
       pts.push([x, y + Math.sin(phase) * amp]);
       // di daerah datar cukup sedikit titik; hemat ukuran berkas
       x += ink < 0.06 ? FLAT_STEP : STEP;
     }
-    if (pts.length > 3) paths.push(pts);
+    flush();
   }
   return paths;
 }
@@ -217,7 +367,7 @@ function cannyPolylines(gray) {
       const gy =
         -g[i - SIZE - 1] - 2 * g[i - SIZE] - g[i - SIZE + 1] +
         g[i + SIZE - 1] + 2 * g[i + SIZE] + g[i + SIZE + 1];
-      mag[i] = Math.hypot(gx, gy) * vignette(x, y);
+      mag[i] = Math.hypot(gx, gy) * subject(x, y);
       // bulatkan arah gradien ke 0/45/90/135 derajat
       let a = (Math.atan2(gy, gx) * 180) / Math.PI;
       if (a < 0) a += 180;
@@ -323,7 +473,11 @@ const n = (v) => Math.round(v * 10) / 10;
 const toPath = (pts) => `M${pts.map(([x, y]) => `${n(x)} ${n(y)}`).join('L')}`;
 
 const src = loadPixels();
-const gray = curve(autoLevels(blur(toGray(src), 0.7)));
+const face = detectFace(src);
+const frame = frameFor(src, face);
+const gray = curve(sharpen(autoLevels(blur(toGray(src, frame), 0.6))));
+subject = makeSubjectMask(face, frame); // butuh ox/oy/scale yang diisi toGray
+
 const shade = shadingPaths(gray);
 const edges = cannyPolylines(gray);
 
@@ -378,7 +532,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
         animation: draw ${DRAW}s ease-out backwards;
       }
       .shade { stroke-width: 1.05; opacity: .82 }
-      .edge  { stroke-width: 1.35; opacity: 1 }
+      .edge  { stroke-width: 1.3; opacity: 1 }
       @keyframes draw { from { stroke-dashoffset: 100 } }
 
       .spin  { transform-origin: ${SIZE / 2}px ${SIZE / 2}px; animation: spin 16s linear infinite }
@@ -409,6 +563,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
 `;
 
 writeFileSync(join(root, 'assets', 'avatar.svg'), svg);
+console.log(`wajah terdeteksi: ${face ? `${face.bw}x${face.bh} @ ${(face.x0 + face.x1) / 2 | 0},${(face.y0 + face.y1) / 2 | 0}` : "TIDAK ADA -- pakai tengah foto"}`);
 console.log(
   `assets/avatar.svg dibuat dari ${src.path.split(/[\\/]/).pop()} — ` +
     `${shade.length} garis shading, ${edges.length} garis kontur, ` +
