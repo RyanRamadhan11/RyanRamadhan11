@@ -1,0 +1,15 @@
+{
+  "name": "ryanramadhan11-profile",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Aset untuk README profil GitHub RyanRamadhan11",
+  "type": "module",
+  "scripts": {
+    "avatar": "node scripts/build-avatar.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0"
+  }
+}

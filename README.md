@@ -7,15 +7,20 @@
 
 <!-- ═══════════════════════ KARTU PROFIL ═══════════════════════ -->
 <!--
-  avatar.svg dibuat oleh scripts/build-avatar.mjs dari assets/avatar.jpg.
-  Ganti fotonya, jalankan ulang skripnya, cincin animasinya ikut terpasang.
+  avatar.svg bukan foto, melainkan potret line-art vektor yang dihitung dari
+  assets/avatar.jpg oleh scripts/build-avatar.mjs -- garisnya menggambar
+  dirinya sendiri saat halaman dibuka.
+
+  Ganti foto:  taruh berkas baru di assets/avatar.jpg (atau .png), lalu
+               npm install && npm run avatar
+  Bingkainya meleset?  Atur CROP / CX / CY di bagian atas skrip itu.
 -->
 
 <table>
 <tr>
 <td width="34%" align="center" valign="middle">
 
-<img src="assets/avatar.svg" width="230" alt="Ryan Ramadhan" />
+<img src="assets/avatar.svg" width="240" alt="Potret garis Ryan Ramadhan" />
 
 <br/>
 
