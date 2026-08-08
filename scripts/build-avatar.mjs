@@ -2,12 +2,15 @@
  * Mengubah assets/avatar.(jpg|png) menjadi assets/avatar.svg:
  * potret line-art vektor yang menggambar dirinya sendiri.
  *
- * Dua lapis garis, sengaja digabung supaya wajahnya tetap kenal:
- *   1. SHADING  - tiap baris horizontal adalah satu garis bergelombang.
- *                 Amplitudo & rapatnya gelombang mengikuti gelap-terang foto,
- *                 jadi tonalitas (bayangan pipi, rambut, jas) ikut terbawa.
- *   2. KONTUR   - deteksi tepi Canny yang ditelusuri jadi polyline, dipakai
- *                 menegaskan mata, hidung, mulut, dan garis rambut.
+ * Tiga lapis garis, sengaja digabung supaya wajahnya tetap kenal:
+ *   1. SUBJEK  - tiap baris horizontal adalah satu garis bergelombang, dipotong
+ *                di batas orangnya. Amplitudo & rapatnya gelombang mengikuti
+ *                terang foto, jadi tonalitas wajah ikut terbawa.
+ *   2. KONTUR  - deteksi tepi Canny yang ditelusuri jadi polyline, dipakai
+ *                menegaskan mata, hidung, mulut, dan garis rambut. Tanpa lapis
+ *                ini wajahnya hilang sama sekali -- sudah diuji.
+ *   3. LATAR   - lapis yang sama untuk luar subjek, tapi renggang dan redup,
+ *                supaya bulatannya terisi penuh tanpa menenggelamkan potretnya.
  *
  * Semua murni <path>, tanpa bitmap, jadi ukurannya kecil dan bisa dianimasikan
  * lewat stroke-dashoffset.
@@ -26,7 +29,7 @@ import { PNG } from 'pngjs';
 // misalnya fotonya rombongan atau wajahnya menyamping -- isi FRAME di bawah
 // ini dengan { crop, cx, cy } dalam pecahan lebar foto untuk memaksanya.
 const FRAME = null;    // contoh: { crop: 0.66, cx: 0.5, cy: 0.52 }
-const ZOOM = 2.1;      // sisi bingkai, dalam kelipatan tinggi wajah
+const ZOOM = 2.0;      // sisi bingkai, dalam kelipatan tinggi wajah
 
 const SIZE = 560;      // sisi kanvas kerja (piksel)
 const ROW_GAP = 2.1;   // jarak antar garis shading
@@ -37,6 +40,7 @@ const AMP = 0.46;      // amplitudo puncak, dalam kelipatan ROW_GAP
 const STEP = 1.5;      // jarak sampel saat garis sedang bergelombang
 const FLAT_STEP = 13;  // jarak sampel saat garis nyaris lurus (menghemat ukuran)
 const SCAN_STEP = 2;   // langkah pemindaian di luar subjek (mempertajam siluet)
+const BG_INK = 0.34;   // seberapa kuat latar di dalam lingkaran ikut digambar
 const SHARPEN = 0.45;  // penajaman lokal; ini yang membuat mata & bibir terbaca
 const GAMMA = 1.0;     // 1 = pemetaan lurus dari terang ke kerapatan garis
 const CONTRAST = 1.05; // kurva S ringan; terlalu keras bikin wajahnya cekung dan tua
@@ -304,15 +308,19 @@ function makeSubjectMask(face, frame) {
  * kebagian garis (nyaris lurus), bagian gelap bergelombang rapat dan tinggi --
  * itu yang membuat tonalitas wajahnya terbaca, bukan cuma tepinya.
  */
-function shadingPaths(gray) {
+function shadingPaths(gray, wantSubject) {
   const sample = (x, y) => {
     const xi = Math.min(SIZE - 1, Math.max(0, Math.round(x)));
     const yi = Math.min(SIZE - 1, Math.max(0, Math.round(y)));
     return gray[yi * SIZE + xi];
   };
   const paths = [];
+  // latar cukup digambar setengah rapat dan setengah teliti -- ia cuma alas,
+  // dan kerapatan penuh di sana melipatgandakan ukuran berkas tanpa guna
+  const gap = wantSubject ? ROW_GAP : ROW_GAP * 2;
+  const step = wantSubject ? STEP : STEP * 1.9;
 
-  for (let y = ROW_GAP; y < SIZE - ROW_GAP; y += ROW_GAP) {
+  for (let y = gap; y < SIZE - gap; y += gap) {
     let pts = null;
     let phase = 0;
     let x = 0;
@@ -324,10 +332,10 @@ function shadingPaths(gray) {
 
     while (x <= SIZE) {
       const inside = subject(x, y);
-      // Di luar orangnya jangan menggambar apa pun. Membiarkan garis lurus
-      // menyeberangi latar -- seperti versi sebelumnya -- memenuhi lingkaran
-      // dengan tekstur serba sama yang menenggelamkan potretnya sendiri.
-      if (inside < 0.10) {
+      // Dua lapis terpisah, bukan satu. Kalau latar dan subjek digambar dengan
+      // pena yang sama, teksturnya serba sama dan potretnya tenggelam; kalau
+      // latarnya dibuang sama sekali, bulatannya jadi bolong dan nanggung.
+      if (wantSubject ? inside < 0.10 : inside >= 0.10) {
         flush();
         // langkah kecil, bukan FLAT_STEP: langkah besar membuat titik masuk ke
         // subjek terkuantisasi, dan siluetnya jadi bertangga
@@ -338,14 +346,15 @@ function shadingPaths(gray) {
       // garisnya berwarna terang, jadi bagian yang banyak garis terbaca terang.
       // Dipetakan terbalik, wajahnya yang tersorot cahaya malah jadi lubang
       // kosong dan latar yang gelap justru dipenuhi garis.
-      const ink = Math.pow(sample(x, y), 1 / GAMMA) * inside;
+      const tone = Math.pow(sample(x, y), 1 / GAMMA);
+      const ink = wantSubject ? tone * inside : tone * BG_INK;
       // makin terang -> gelombang lebih rapat dan lebih tinggi
-      phase += STEP * (0.5 + 1.7 * ink);
-      const amp = ink * ROW_GAP * AMP;
+      phase += step * (0.5 + 1.7 * ink);
+      const amp = ink * gap * AMP;
       if (!pts) pts = [];
       pts.push([x, y + Math.sin(phase) * amp]);
       // di daerah datar cukup sedikit titik; hemat ukuran berkas
-      x += ink < 0.06 ? FLAT_STEP : STEP;
+      x += ink < 0.06 ? FLAT_STEP : step;
     }
     flush();
   }
@@ -478,12 +487,14 @@ const frame = frameFor(src, face);
 const gray = curve(sharpen(autoLevels(blur(toGray(src, frame), 0.6))));
 subject = makeSubjectMask(face, frame); // butuh ox/oy/scale yang diisi toGray
 
-const shade = shadingPaths(gray);
+const shade = shadingPaths(gray, true);
+const back = shadingPaths(gray, false);
 const edges = cannyPolylines(gray);
 
 // digambar dari atas ke bawah supaya animasinya terbaca seperti tangan menggores
 const order = (pts) => pts[0][1];
 shade.sort((a, b) => order(a) - order(b));
+back.sort((a, b) => order(a) - order(b));
 edges.sort((a, b) => order(a) - order(b));
 
 const DRAW = 2.6; // detik untuk menyelesaikan seluruh gambar
@@ -526,13 +537,14 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
         Kalau dibalik -- diam = tersembunyi, ditahan pakai forwards -- gambarnya
         lenyap lagi begitu animasinya kelar.
       */
-      .shade, .edge {
+      .shade, .edge, .bg {
         fill: none; stroke: url(#ink); stroke-linecap: round; stroke-linejoin: round;
         stroke-dasharray: 100; stroke-dashoffset: 0;
         animation: draw ${DRAW}s ease-out backwards;
       }
       .shade { stroke-width: 1.05; opacity: .82 }
       .edge  { stroke-width: 1.3; opacity: 1 }
+      .bg    { stroke-width: 0.85; opacity: .26 }
       @keyframes draw { from { stroke-dashoffset: 100 } }
 
       .spin  { transform-origin: ${SIZE / 2}px ${SIZE / 2}px; animation: spin 16s linear infinite }
@@ -542,7 +554,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
       @keyframes pulse { 0%,100% { opacity:.4 } 50% { opacity:.9 } }
 
       @media (prefers-reduced-motion: reduce) {
-        .shade, .edge { animation: none }
+        .shade, .edge, .bg { animation: none }
         .spin, .spin2, .pulse { animation: none }
       }
     </style>
@@ -551,8 +563,9 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
   <circle cx="${SIZE / 2}" cy="${SIZE / 2}" r="${SIZE / 2 - 4}" fill="url(#glow)" class="pulse" />
 
   <g clip-path="url(#circle)">
-    ${svgPaths(shade, 'shade', 0, DRAW * 0.55)}
-    ${svgPaths(edges, 'edge', DRAW * 0.35, DRAW * 0.8)}
+    ${svgPaths(back, 'bg', 0, DRAW * 0.45)}
+    ${svgPaths(shade, 'shade', DRAW * 0.1, DRAW * 0.6)}
+    ${svgPaths(edges, 'edge', DRAW * 0.4, DRAW * 0.85)}
   </g>
 
   <circle cx="${SIZE / 2}" cy="${SIZE / 2}" r="${SIZE / 2 - 27}" fill="none" stroke="url(#ring)" stroke-width="3"
@@ -566,6 +579,6 @@ writeFileSync(join(root, 'assets', 'avatar.svg'), svg);
 console.log(`wajah terdeteksi: ${face ? `${face.bw}x${face.bh} @ ${(face.x0 + face.x1) / 2 | 0},${(face.y0 + face.y1) / 2 | 0}` : "TIDAK ADA -- pakai tengah foto"}`);
 console.log(
   `assets/avatar.svg dibuat dari ${src.path.split(/[\\/]/).pop()} — ` +
-    `${shade.length} garis shading, ${edges.length} garis kontur, ` +
+    `${shade.length} subjek, ${back.length} latar, ${edges.length} kontur, ` +
     `${(Buffer.byteLength(svg) / 1024).toFixed(0)} KB`,
 );
