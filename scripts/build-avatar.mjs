@@ -32,7 +32,7 @@ const FRAME = null;    // contoh: { crop: 0.66, cx: 0.5, cy: 0.52 }
 const ZOOM = 2.0;      // sisi bingkai, dalam kelipatan tinggi wajah
 
 const SIZE = 560;      // sisi kanvas kerja (piksel)
-const ROW_GAP = 2.1;   // jarak antar garis shading
+const ROW_GAP = 2.6;   // jarak antar garis shading
 // Amplitudo maksimum HARUS di bawah setengah ROW_GAP. Kalau lebih, gelombang
 // baris bertabrakan dengan tetangganya dan detail wajah saling menelan --
 // itu yang bikin versi sebelumnya jadi bubur.
@@ -119,6 +119,60 @@ function detectFace({ data, w, h }) {
     if (!best || score > best.score) best = { score, x0, x1, y0, y1, bw, bh };
   }
   return best;
+}
+
+/**
+ * Ukur rambutnya: piksel gelap yang menyambung ke tepi atas kotak wajah.
+ * Elips tebakan selalu meleset -- kalau kelebaran ia menangkap latar dan
+ * kepalanya jadi kotak, kalau kesempitan rambutnya terpotong. Lebarnya dibatasi
+ * terhadap kotak wajah supaya, kalau warna gelapnya bocor ke bangunan di
+ * belakang, kepalanya tidak ikut melar.
+ */
+function detectHead({ data, w, h }, face) {
+  if (!face) return null;
+  const luma = (i) => (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
+
+  // jendela pencarian: sedikit lebih lebar dari wajah, dari atas kepala sampai
+  // sedikit di bawah garis mata
+  const wx0 = Math.max(0, Math.round(face.x0 - face.bw * 0.45));
+  const wx1 = Math.min(w - 1, Math.round(face.x1 + face.bw * 0.45));
+  const wy0 = Math.max(0, Math.round(face.y0 - face.bh * 0.85));
+  const wy1 = Math.min(h - 1, Math.round(face.y0 + face.bh * 0.3));
+
+  const dark = 0.34;
+  const cx = Math.round((face.x0 + face.x1) / 2);
+  const isDark = (x, y) => luma((y * w + x) * 4) <= dark;
+
+  // Pemindaian per baris keluar dari sumbu tengah, BUKAN flood fill. Rambutnya
+  // menempel pada atap gelap di belakang, dan flood fill menembus lewat titik
+  // sentuh itu lalu mengukur seluruh bangunan sebagai kepala.
+  // Baris yang menabrak batas ini dianggap bocor ke latar gelap dan DIBUANG,
+  // bukan ikut dirata-rata: kebocoran hanya bisa membesarkan ukuran, jadi
+  // merata-ratakannya tetap menghasilkan kepala yang kelebaran.
+  const limit = Math.round(face.bw * 0.72);
+  const halves = [];
+  for (let y = Math.round(face.y0 - face.bh * 0.42); y <= face.y0; y++) {
+    if (y < wy0 || y > wy1 || !isDark(cx, y)) continue;
+    let l = cx;
+    while (l - 1 >= wx0 && cx - l < limit && isDark(l - 1, y)) l--;
+    let r = cx;
+    while (r + 1 <= wx1 && r - cx < limit && isDark(r + 1, y)) r++;
+    if (cx - l >= limit || r - cx >= limit) continue;
+    halves.push({ half: (r - l) / 2, mid: (l + r) / 2 });
+  }
+  if (halves.length < 3) return null;
+
+  const mid = (arr) => arr.sort((a, b) => a - b)[arr.length >> 1];
+  const half = mid(halves.map((s) => s.half));
+  const centre = mid(halves.map((s) => s.mid));
+
+  // puncak rambut: naik di sumbu tengah selama masih gelap, dengan batas tinggi
+  // kepala yang masuk akal supaya tidak ikut naik ke atap
+  const ceiling = Math.round(face.y0 - face.bh * 0.55);
+  let top = face.y0;
+  while (top - 1 >= ceiling && isDark(cx, top - 1)) top--;
+
+  return { cx: centre, half, top };
 }
 
 /** Bingkai potret: dari wajah kalau terdeteksi, kalau tidak dari tengah foto. */
@@ -275,30 +329,34 @@ function falloff(v, inner, outer) {
  * tidak ada bentuk radial yang bisa memisahkan keduanya. Bentuk yang mengikuti
  * orangnya bisa.
  */
-function makeSubjectMask(face, frame) {
+function makeSubjectMask(face, head, frame) {
   if (!face) return () => 1;
   const { ox, oy, scale } = frame;
-  const fx = ((face.x0 + face.x1) / 2 - ox) / scale;
-  const fy = ((face.y0 + face.y1) / 2 - oy) / scale;
   const fw = face.bw / scale;
-  const fh = face.bh / scale;
+  const chin = (face.y1 - oy) / scale;
 
-  const hx = fx;
-  const hy = fy - fh * 0.20;        // naik sedikit supaya rambut ikut terangkul
-  // fw/fh itu ukuran PENUH kotak wajah, sedangkan elips memakai jari-jari, jadi
-  // koefisiennya berkisar di sekitar 0,5 -- sedikit lebih besar untuk memberi
-  // ruang bagi telinga dan rambut yang tidak terbaca sebagai kulit.
-  const rx = fw * 0.56;
-  const ry = fh * 0.74;
-  const neckY = hy + ry * 0.80;
+  // Elipsnya dipasang pada rambut yang benar-benar terukur: lebarnya dari lebar
+  // rambut, puncaknya dari puncak rambut, bawahnya dari dagu. Sebelumnya semua
+  // itu ditebak dari kotak wajah, dan tebakan yang kelebaran itulah yang bikin
+  // kepalanya terbaca sebagai kotak.
+  // Hanya PUNCAK rambut yang diambil dari pengukuran: memindai ke atas di sumbu
+  // tengah itu andal. Lebar dan pusatnya tidak -- di kiri-kanan kepala ada
+  // bangunan yang sama gelapnya, jadi pemindaian mendatar ikut menelannya dan
+  // kepalanya melenceng. Keduanya diambil dari kotak wajah yang jauh stabil.
+  const hx = ((face.x0 + face.x1) / 2 - ox) / scale;
+  const top = head ? (head.top - oy) / scale : (face.y0 - oy) / scale - fw * 0.3;
+  const rx = fw * 0.46;
+  const ry = Math.max(rx * 0.9, (chin - top) / 2);
+  const hy = top + ry;
+  const neckY = hy + ry * 0.86;
 
   return (x, y) => {
-    const head = falloff(Math.hypot((x - hx) / rx, (y - hy) / ry), 0.92, 1.16);
-    if (y < neckY) return head;
+    const inHead = falloff(Math.hypot((x - hx) / rx, (y - hy) / ry), 0.90, 1.18);
+    if (y < neckY) return inHead;
     const drop = (y - neckY) / Math.max(1, SIZE - neckY);
-    const halfW = rx * (0.86 + 1.5 * drop);
-    const body = falloff(Math.abs(x - hx) / halfW, 0.88, 1.12);
-    return Math.max(head, body);
+    const halfW = rx * (0.82 + 1.7 * drop);
+    const body = falloff(Math.abs(x - hx) / halfW, 0.88, 1.14);
+    return Math.max(inHead, body);
   };
 }
 
@@ -485,7 +543,8 @@ const src = loadPixels();
 const face = detectFace(src);
 const frame = frameFor(src, face);
 const gray = curve(sharpen(autoLevels(blur(toGray(src, frame), 0.6))));
-subject = makeSubjectMask(face, frame); // butuh ox/oy/scale yang diisi toGray
+const head = detectHead(src, face);
+subject = makeSubjectMask(face, head, frame); // butuh ox/oy/scale yang diisi toGray
 
 const shade = shadingPaths(gray, true);
 const back = shadingPaths(gray, false);
@@ -517,9 +576,9 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
       potret, bukan mengulang per garis.
     -->
     <linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${SIZE * 0.45}" y2="${SIZE}">
-      <stop offset="0%" stop-color="#C7D2FE" />
-      <stop offset="55%" stop-color="#A78BFA" />
-      <stop offset="100%" stop-color="#38BDF8" />
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#F2F5FF" />
+      <stop offset="100%" stop-color="#DCE3F5" />
     </linearGradient>
     <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#6366F1" />
@@ -576,6 +635,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE
 `;
 
 writeFileSync(join(root, 'assets', 'avatar.svg'), svg);
+console.log(`rambut terukur: ${head ? `setengah-lebar ${Math.round(head.half)}, pusat ${Math.round(head.cx)}, puncak ${Math.round(head.top)}` : "TIDAK ADA"}`);
 console.log(`wajah terdeteksi: ${face ? `${face.bw}x${face.bh} @ ${(face.x0 + face.x1) / 2 | 0},${(face.y0 + face.y1) / 2 | 0}` : "TIDAK ADA -- pakai tengah foto"}`);
 console.log(
   `assets/avatar.svg dibuat dari ${src.path.split(/[\\/]/).pop()} — ` +
