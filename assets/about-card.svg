@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 348" width="640" height="348" role="img" aria-label="Tentang Ryan Ramadhan">
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity=".9" />
+      <stop offset="50%" stop-color="#8B5CF6" stop-opacity=".55" />
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity=".9" />
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#12161F" />
+      <stop offset="100%" stop-color="#0B0E14" />
+    </linearGradient>
+    <style>
+      text { font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace; font-size: 15px; }
+      .num { fill: #2D333B; font-size: 13px; }
+      .pun { fill: #8B949E; }
+      .kw  { fill: #FF7B72; }
+      .var { fill: #FFA657; }
+      .key { fill: #79C0FF; }
+      .str { fill: #A5D6FF; }
+
+      .l { opacity: 0; animation: in .55s cubic-bezier(.2,.7,.3,1) forwards; }
+      .l1 { animation-delay: .10s } .l2 { animation-delay: .25s }
+      .l3 { animation-delay: .40s } .l4 { animation-delay: .55s }
+      .l5 { animation-delay: .70s } .l6 { animation-delay: .85s }
+      .l7 { animation-delay: 1.00s } .l8 { animation-delay: 1.15s }
+      @keyframes in { from { opacity: 0; transform: translateX(-10px) } to { opacity: 1; transform: none } }
+
+      .caret { fill: #8B5CF6; opacity: 0; animation: blink 1.1s steps(1) 1.4s infinite; }
+      @keyframes blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+
+      .sheen { animation: sheen 6s ease-in-out infinite; }
+      @keyframes sheen { 0%, 100% { opacity: .45 } 50% { opacity: 1 } }
+
+      @media (prefers-reduced-motion: reduce) {
+        .l { opacity: 1; animation: none } .caret, .sheen { animation: none; opacity: 1 }
+      }
+    </style>
+  </defs>
+
+  <rect x="1.5" y="1.5" width="637" height="345" rx="16" fill="url(#bg)" />
+  <rect x="1.5" y="1.5" width="637" height="345" rx="16" fill="none" stroke="url(#edge)" stroke-width="1.5" class="sheen" />
+
+  <!-- title bar -->
+  <circle cx="28" cy="27" r="6" fill="#FF5F57" />
+  <circle cx="50" cy="27" r="6" fill="#FEBC2E" />
+  <circle cx="72" cy="27" r="6" fill="#28C840" />
+  <text x="320" y="32" text-anchor="middle" fill="#6E7681" font-size="13">ryan@github — ~/about.js</text>
+  <line x1="1.5" y1="54" x2="638.5" y2="54" stroke="#1C2128" stroke-width="1" />
+
+  <!-- code -->
+  <g class="l l1">
+    <text x="30" y="92" class="num">1</text>
+    <text x="62" y="92" xml:space="preserve"><tspan class="kw">const</tspan><tspan class="var"> ryan</tspan><tspan class="pun"> = {</tspan></text>
+  </g>
+  <g class="l l2">
+    <text x="30" y="119" class="num">2</text>
+    <text x="62" y="119" xml:space="preserve"><tspan class="key">  role</tspan><tspan class="pun">:  </tspan><tspan class="str">"Software Engineer"</tspan><tspan class="pun">,</tspan></text>
+  </g>
+  <g class="l l3">
+    <text x="30" y="146" class="num">3</text>
+    <text x="62" y="146" xml:space="preserve"><tspan class="key">  base</tspan><tspan class="pun">:  </tspan><tspan class="str">"Karawang, Indonesia"</tspan><tspan class="pun">,</tspan></text>
+  </g>
+  <g class="l l4">
+    <text x="30" y="173" class="num">4</text>
+    <text x="62" y="173" xml:space="preserve"><tspan class="key">  stack</tspan><tspan class="pun">: [</tspan><tspan class="str">"Laravel"</tspan><tspan class="pun">, </tspan><tspan class="str">"React"</tspan><tspan class="pun">, </tspan><tspan class="str">"Spring Boot"</tspan><tspan class="pun">, </tspan><tspan class="str">".NET"</tspan><tspan class="pun">],</tspan></text>
+  </g>
+  <g class="l l5">
+    <text x="30" y="200" class="num">5</text>
+    <text x="62" y="200" xml:space="preserve"><tspan class="key">  focus</tspan><tspan class="pun">: </tspan><tspan class="str">"microservices &amp; performa web"</tspan><tspan class="pun">,</tspan></text>
+  </g>
+  <g class="l l6">
+    <text x="30" y="227" class="num">6</text>
+    <text x="62" y="227" xml:space="preserve"><tspan class="key">  exp</tspan><tspan class="pun">:   </tspan><tspan class="str">"3+ tahun · 25+ proyek"</tspan><tspan class="pun">,</tspan></text>
+  </g>
+  <g class="l l7">
+    <text x="30" y="254" class="num">7</text>
+    <text x="62" y="254" xml:space="preserve"><tspan class="key">  motto</tspan><tspan class="pun">: </tspan><tspan class="str">"Ship it, then make it clean."</tspan></text>
+  </g>
+  <g class="l l8">
+    <text x="30" y="281" class="num">8</text>
+    <text x="62" y="281" xml:space="preserve"><tspan class="pun">};</tspan></text>
+    <rect x="86" y="269" width="9" height="17" class="caret" />
+  </g>
+
+  <!-- status bar -->
+  <line x1="1.5" y1="306" x2="638.5" y2="306" stroke="#1C2128" stroke-width="1" />
+  <circle cx="30" cy="327" r="4" fill="#28C840" />
+  <text x="44" y="332" fill="#6E7681" font-size="12">open to collaborate</text>
+  <text x="610" y="332" text-anchor="end" fill="#6E7681" font-size="12">javascript · utf-8 · ln 8</text>
+</svg>

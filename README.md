@@ -1,18 +1,50 @@
 <!-- ═══════════════════════ HEADER ═══════════════════════ -->
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366F1,50:8B5CF6,100:0EA5E9&height=200&section=header&text=Ryan%20Ramadhan&fontSize=52&fontColor=ffffff&fontAlignY=32&desc=Software%20Engineer&descAlignY=52&descSize=20&animation=fadeIn" width="100%" alt="Ryan Ramadhan" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0B0E14,45:6366F1,75:8B5CF6,100:0EA5E9&height=180&section=header&text=Ryan%20Ramadhan&fontSize=52&fontColor=ffffff&fontAlignY=34&desc=Software%20Engineer&descAlignY=55&descSize=18&animation=fadeIn" width="100%" alt="Ryan Ramadhan" />
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=800&color=6366F1&center=true&vCenter=true&width=700&lines=Software+Engineer;Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;3%2B+tahun+%C2%B7+25%2B+proyek+web+%26+mobile;Sedang+mendalami+microservices+%26+performa+web" alt="Typing SVG" />
+</div>
+
+<!-- ═══════════════════════ KARTU PROFIL ═══════════════════════ -->
+<!--
+  avatar.svg dibuat oleh scripts/build-avatar.mjs dari assets/avatar.jpg.
+  Ganti fotonya, jalankan ulang skripnya, cincin animasinya ikut terpasang.
+-->
+
+<table>
+<tr>
+<td width="34%" align="center" valign="middle">
+
+<img src="assets/avatar.svg" width="230" alt="Ryan Ramadhan" />
 
 <br/>
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-6366F1?style=for-the-badge&logo=vercel&logoColor=white)](https://profile-ryanramadhans.vercel.app)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ryan-ramadhan-17118b222/)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/ryanrmdhans/)
-[![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ramadhanryan676@gmail.com)
+**Ryan Ramadhan**<br/>
+<sub>`he/him` · Karawang, Indonesia</sub>
 
-<img src="https://komarev.com/ghpvc/?username=RyanRamadhan11&style=for-the-badge&color=6366F1&label=PROFILE+VIEWS" alt="Profile views" />
+<br/>
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-0B0E14?style=for-the-badge&logo=vercel&logoColor=8B5CF6&labelColor=0B0E14)](https://profile-ryanramadhans.vercel.app)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0B0E14?style=for-the-badge&logo=linkedin&logoColor=0A66C2&labelColor=0B0E14)](https://www.linkedin.com/in/ryan-ramadhan-17118b222/)
+[![Instagram](https://img.shields.io/badge/Instagram-0B0E14?style=for-the-badge&logo=instagram&logoColor=E4405F&labelColor=0B0E14)](https://www.instagram.com/ryanrmdhans/)
+[![Email](https://img.shields.io/badge/Email-0B0E14?style=for-the-badge&logo=gmail&logoColor=EA4335&labelColor=0B0E14)](mailto:ramadhanryan676@gmail.com)
+
+</td>
+<td width="66%" valign="middle">
+
+<img src="assets/about-card.svg" width="100%" alt="const ryan = { role: Software Engineer, base: Karawang Indonesia, stack: Laravel React Spring Boot .NET }" />
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=19&duration=3000&pause=800&color=8B5CF6&center=true&vCenter=true&width=720&lines=Fullstack+%E2%80%94+Laravel+%C2%B7+React+%C2%B7+Spring+Boot+%C2%B7+.NET;3%2B+tahun+%C2%B7+25%2B+proyek+web+%26+mobile;Sedang+mendalami+microservices+%26+performa+web" alt="Typing SVG" />
+
+<br/>
+
+<img src="https://komarev.com/ghpvc/?username=RyanRamadhan11&style=for-the-badge&color=8B5CF6&label=PROFILE+VIEWS" alt="Profile views" />
 
 </div>
 
@@ -42,6 +74,23 @@ Membangun pengalaman digital dengan fokus pada solusi yang menggabungkan
 <!-- ═══════════════════════ TECH STACK ═══════════════════════ -->
 
 ## Tech Stack
+
+<div align="center">
+
+![Laravel](https://img.shields.io/badge/Laravel-0B0E14?style=flat-square&logo=laravel&logoColor=FF2D20)
+![React](https://img.shields.io/badge/React-0B0E14?style=flat-square&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-0B0E14?style=flat-square&logo=nextdotjs&logoColor=fff)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-0B0E14?style=flat-square&logo=springboot&logoColor=6DB33F)
+![.NET](https://img.shields.io/badge/.NET-0B0E14?style=flat-square&logo=dotnet&logoColor=512BD4)
+![TypeScript](https://img.shields.io/badge/TypeScript-0B0E14?style=flat-square&logo=typescript&logoColor=3178C6)
+![PHP](https://img.shields.io/badge/PHP-0B0E14?style=flat-square&logo=php&logoColor=777BB4)
+![Java](https://img.shields.io/badge/Java-0B0E14?style=flat-square&logo=openjdk&logoColor=fff)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-0B0E14?style=flat-square&logo=postgresql&logoColor=4169E1)
+![MySQL](https://img.shields.io/badge/MySQL-0B0E14?style=flat-square&logo=mysql&logoColor=4479A1)
+![Tailwind](https://img.shields.io/badge/Tailwind-0B0E14?style=flat-square&logo=tailwindcss&logoColor=06B6D4)
+![Docker](https://img.shields.io/badge/Docker-0B0E14?style=flat-square&logo=docker&logoColor=2496ED)
+
+</div>
 
 | Kategori | Teknologi |
 | --- | --- |
@@ -101,16 +150,16 @@ layanan pihak ketiga.
 
 <div align="center">
 
-<img height="165" src="https://github-readme-stats-eight-theta.vercel.app/api?username=RyanRamadhan11&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&theme=transparent&title_color=6366F1&icon_color=8B5CF6&text_color=64748B&ring_color=6366F1" alt="GitHub Stats" />
-<img height="165" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=RyanRamadhan11&layout=compact&langs_count=8&hide_border=true&theme=transparent&title_color=6366F1&text_color=64748B" alt="Top Languages" />
+<img height="170" src="https://github-readme-stats-eight-theta.vercel.app/api?username=RyanRamadhan11&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&bg_color=0B0E14&title_color=8B5CF6&icon_color=6366F1&text_color=8B949E&ring_color=0EA5E9" alt="GitHub Stats" />
+<img height="170" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=RyanRamadhan11&layout=compact&langs_count=8&hide_border=true&bg_color=0B0E14&title_color=8B5CF6&text_color=8B949E" alt="Top Languages" />
 
 <br/>
 
-<img src="https://streak-stats.demolab.com?user=RyanRamadhan11&hide_border=true&theme=transparent&ring=6366F1&fire=8B5CF6&currStreakLabel=6366F1&sideLabels=64748B&dates=94A3B8&currStreakNum=1E293B&sideNums=1E293B" alt="Streak" />
+<img src="https://streak-stats.demolab.com?user=RyanRamadhan11&hide_border=true&background=0B0E14&ring=8B5CF6&fire=0EA5E9&currStreakLabel=8B5CF6&sideLabels=8B949E&dates=6E7681&currStreakNum=E6EDF3&sideNums=E6EDF3&stroke=1F2937" alt="Streak" />
 
 <br/><br/>
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=RyanRamadhan11&bg_color=00000000&color=6366F1&line=8B5CF6&point=0EA5E9&area=true&area_color=6366F1&hide_border=true" alt="Activity Graph" width="100%" />
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=RyanRamadhan11&bg_color=0B0E14&color=E6EDF3&title_color=8B5CF6&line=8B5CF6&point=0EA5E9&area=true&area_color=6366F1&hide_border=true" alt="Activity Graph" width="100%" />
 
 </div>
 
@@ -136,6 +185,6 @@ Terbuka untuk kolaborasi, proyek freelance, dan diskusi teknis.
 
 <i>“Ship it, then make it clean.”</i>
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,50:8B5CF6,100:6366F1&height=140&section=footer" width="100%" alt="footer" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0EA5E9,25:8B5CF6,55:6366F1,100:0B0E14&height=140&section=footer" width="100%" alt="footer" />
 
 </div>
